@@ -1,3 +1,4 @@
+const generateToken = require("../config/generateToken");
 const User = require("../models/userModel");
 
 exports.registerUser = async (req, res) => {
@@ -26,6 +27,7 @@ exports.registerUser = async (req, res) => {
       name: name,
       email: email,
       pic: pic,
+      token: generateToken(user._id),
     });
   } else {
     res.status(400).send("Creating user failed, please try again");
