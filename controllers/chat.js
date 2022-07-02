@@ -73,3 +73,26 @@ exports.accessChat = async (req, res) => {
     }
   }
 };
+
+exports.fetchChats = async (req, res) => {
+  try {
+    //finding from the users array where it matches the current user
+    //and we will populate the groupadmin, users, and latestMessage
+    const chats = await Chat.find({
+      users: { $elemMatch: { $eq: req.user._id } },
+    })
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password")
+      .populate("latestMessage")
+      .sort({ updatedAt: -1 });
+    //after populating chats, we should also populate the user that has sent the latest message
+    //so what we do its
+    chats = await User.populate(chats, {
+      path: "latestMessage.sender",
+      select: "name pic email",
+    });
+    res.status(200).json(chats);
+  } catch (e) {
+    res.status(400).send("Something went wrong while fetching chats");
+  }
+};
