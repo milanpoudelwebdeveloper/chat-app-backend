@@ -1,5 +1,6 @@
 const generateToken = require("../config/generateToken");
 const User = require("../models/userModel");
+const bcrypt = require("bcrypt");
 
 exports.registerUser = async (req, res) => {
   const { name, email, password, pic } = req.body;
@@ -14,12 +15,16 @@ exports.registerUser = async (req, res) => {
     res.status(400).send("The user with that email already exists");
   }
 
-  const user = await User.create({
+  const newUser = {
     name,
     email,
     password,
     pic,
-  });
+  };
+
+  const salt = await bcrypt.genSalt(10);
+  newUser.password = await bcrypt.hash(newUser.password, salt);
+  const user = await User.create(newUser);
   //if user has been created then
   if (user) {
     res.status(201).json({
@@ -31,5 +36,14 @@ exports.registerUser = async (req, res) => {
     });
   } else {
     res.status(400).send("Creating user failed, please try again");
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email }).exec();
+  if (!user) {
+    res.status(400).send("User with this email address doesn't exist");
   }
 };
