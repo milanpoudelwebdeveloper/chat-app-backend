@@ -60,3 +60,25 @@ exports.loginUser = async (req, res) => {
     res.status(401).send("User with that email doesn't exist");
   }
 };
+
+exports.getAllUsers = async (req, res) => {
+  const keyword = req.query.keyword
+    ? {
+        //if keyword is present then
+        //here $regex helps in matching the patterns of keyword and or helps in finding all the database
+        //results that match the keyword we sent in name and email
+        $or: [
+          { name: { $regex: keyword, $options: "i" } },
+          {
+            email: { $regex: keyword, $options: "i" },
+          },
+        ],
+      }
+    : //otherwise we do nothing
+      {};
+
+  const users = await User.find(keyword)
+    .find({ _id: { $ne: req.user._id } })
+    .exec();
+  res.status(200).json(users);
+};
