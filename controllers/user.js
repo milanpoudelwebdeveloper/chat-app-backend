@@ -7,7 +7,8 @@ exports.registerUser = async (req, res) => {
     throw new Error("Please enter all the fiels");
   }
   //if user already exists then
-  const userExists = await User.findOne({ email });
+  const userExists = await User.findOne({ email }).exec();
+
   if (userExists) {
     res.status(400).send("The user with that email already exists");
   }
