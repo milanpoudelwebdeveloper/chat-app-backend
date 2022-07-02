@@ -10,6 +10,8 @@ cloudinary.config({
 
 exports.uploadImage = async (req, res) => {
   const { image } = req.body;
+
+  console.log("hey request body is", req.body);
   //we are going to send the image in the request body
   try {
     let result = await cloudinary.uploader.upload(image, {

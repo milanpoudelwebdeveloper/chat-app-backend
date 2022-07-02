@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const fs = require("fs");
 const morgan = require("morgan");
+
 require("dotenv").config();
 
 //app
@@ -19,6 +20,7 @@ mongoose
 
 //middleware
 app.use(morgan("dev"));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: "2mb" }));
 app.use(cors());
 

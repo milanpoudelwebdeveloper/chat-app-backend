@@ -13,6 +13,7 @@ exports.registerUser = async (req, res) => {
 
   if (userExists) {
     res.status(400).send("The user with that email already exists");
+    return;
   }
 
   const newUser = {
@@ -41,12 +42,17 @@ exports.registerUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
-
   const user = await User.findOne({ email }).exec();
   if (user) {
     const validPassword = await bcrypt.compare(password, user.password);
     if (validPassword) {
-      res.status(200).send("Logged in successfully");
+      res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        pic: user.pic,
+        token: generateToken(user._id),
+      });
     } else {
       res.status(400).send("Incorrect password");
     }
