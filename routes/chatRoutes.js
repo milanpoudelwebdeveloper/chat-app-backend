@@ -1,5 +1,12 @@
 const express = require("express");
-const { accessChat, fetchChats } = require("../controllers/chat");
+const {
+  accessChat,
+  fetchChats,
+  createGroupChat,
+  renameGroup,
+  addUsersToGroup,
+  removeUsers,
+} = require("../controllers/chat");
 const { authCheck } = require("../middlewares/userAuth");
 const router = express.Router();
 
@@ -7,8 +14,9 @@ const router = express.Router();
 
 router.post("/chat", authCheck, accessChat);
 router.get("/chats", authCheck, fetchChats);
-// router.post("/groupChats", authCheck, createGroupChat);
-// router.put("/chatGroup/:id", authCheck, renameGroupChat);
-// router.put("/chatGroup/:id", authCheck, addToGroupChat);
+router.post("/groupChats", authCheck, createGroupChat);
+router.put("/chatGroup/rename", authCheck, renameGroup);
+router.put("/chatGroup/addusers", authCheck, addUsersToGroup);
+router.put("/chatGroup/removeUsers", authCheck, removeUsers);
 
 module.exports = router;
