@@ -29,7 +29,7 @@ exports.accessChat = async (req, res) => {
   })
     //populating users, sender and receiver and also lastmessage
     .populate("users", "-password")
-    .populate("lastestMessage")
+    .populate("latestMessage")
     .exec();
 
   console.log(
@@ -78,7 +78,7 @@ exports.fetchChats = async (req, res) => {
   try {
     //finding from the users array where it matches the current user
     //and we will populate the groupadmin, users, and latestMessage
-    const chats = await Chat.find({
+    let chats = await Chat.find({
       users: { $elemMatch: { $eq: req.user._id } },
     })
       .populate("users", "-password")
@@ -93,6 +93,7 @@ exports.fetchChats = async (req, res) => {
     });
     res.status(200).json(chats);
   } catch (e) {
+    console.log(e);
     res.status(400).send("Something went wrong while fetching chats");
   }
 };

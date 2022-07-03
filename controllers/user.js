@@ -68,9 +68,9 @@ exports.getAllUsers = async (req, res) => {
         //here $regex helps in matching the patterns of keyword and or helps in finding all the database
         //results that match the keyword we sent in name and email
         $or: [
-          { name: { $regex: keyword, $options: "i" } },
+          { name: { $regex: req.query.keyword, $options: "i" } },
           {
-            email: { $regex: keyword, $options: "i" },
+            email: { $regex: req.query.keyword, $options: "i" },
           },
         ],
       }
