@@ -2,7 +2,17 @@ const Message = require("../models/messageModel");
 const Chat = require("../models/chatModel");
 const User = require("../models/userModel");
 
-exports.allMessages = async (req, res) => {};
+exports.allMessages = async (req, res) => {
+  try {
+    const messages = await Message.find({ chat: req.params.chatId })
+      .populate("sender", "name pic email")
+      .populate("chat");
+    res.json(messages);
+  } catch (e) {
+    console.log(e);
+    res.status(400).send("Something went wrong while fetching the messages");
+  }
+};
 
 exports.sendMessage = async (req, res) => {
   const { content, chatId } = req.body;
@@ -19,8 +29,8 @@ exports.sendMessage = async (req, res) => {
   try {
     let message = await Message.create(newMessage);
     //since we are populating on the instance that is just created, so we have to use execPopulate()
-    message = await message.populate("sender", "name pic").execPopulate();
-    message = await message.populate("chat").execPopulate();
+    message = await message.populate("sender", "name pic");
+    message = await message.populate("chat");
     //populating users in chat
     message = await User.populate(message, {
       path: "chat.users",
