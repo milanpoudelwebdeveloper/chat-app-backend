@@ -100,6 +100,9 @@ exports.fetchChats = async (req, res) => {
 
 exports.createGroupChat = async (req, res) => {
   const { users, groupName } = req.body;
+
+  console.log("Group name is", groupName);
+
   if (!users || !groupName) {
     return res.status(400).send("Please provide all the required fields");
   }
@@ -114,7 +117,7 @@ exports.createGroupChat = async (req, res) => {
   try {
     const groupChat = await Chat.create({
       chatName: groupName,
-      users: users,
+      users: usersArray,
       isGroupChat: true,
       groupAdmin: req.user,
     });
@@ -178,10 +181,10 @@ exports.addUsersToGroup = async (req, res) => {
   }
 };
 
-exports.removeUsers = () => {
+exports.removeUsers = async (req, res) => {
   const { chatId, userId } = req.body;
   try {
-    const removed = Chat.findByIdAndUpdate(
+    const removed = await Chat.findByIdAndUpdate(
       chatId,
       {
         $pull: { users: userId },
@@ -191,6 +194,8 @@ exports.removeUsers = () => {
       .populate("users", "-password")
       .populate("groupAdmin", "-password")
       .exec();
+
+    console.log("after removing users", removed);
     if (!removed) {
       return res.status(400).send("Chat not found");
     } else {
@@ -199,5 +204,18 @@ exports.removeUsers = () => {
   } catch (e) {
     console.log(e);
     res.status(400).send("Something went wrong while removing user from group");
+  }
+};
+
+exports.leaveGroup = async (req, res) => {
+  const { chatId, userId } = req.body;
+  try {
+    await Chat.findByIdAndUpdate(chatId, {
+      $pull: { users: userId },
+    }).exec();
+    res.status(200).send("Successfully lef the group");
+  } catch (e) {
+    console.log(e);
+    res.status(400).send("Something went wrong while leaving group");
   }
 };

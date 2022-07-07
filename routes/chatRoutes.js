@@ -6,6 +6,7 @@ const {
   renameGroup,
   addUsersToGroup,
   removeUsers,
+  leaveGroup,
 } = require("../controllers/chat");
 const { authCheck } = require("../middlewares/userAuth");
 const router = express.Router();
@@ -18,5 +19,6 @@ router.post("/groupChats", authCheck, createGroupChat);
 router.put("/chatGroup/rename", authCheck, renameGroup);
 router.put("/chatGroup/addusers", authCheck, addUsersToGroup);
 router.put("/chatGroup/removeUsers", authCheck, removeUsers);
+router.put("/chatGroup/leaveGroup", authCheck, leaveGroup);
 
 module.exports = router;
